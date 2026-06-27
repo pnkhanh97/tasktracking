@@ -25,8 +25,9 @@ export async function createProjectAction(
     return { error: 'Vui lòng điền đầy đủ: Tên project, Deadline, Manager.' }
   }
 
+  let projectId: string
   try {
-    const projectId = await createProject({
+    projectId = await createProject({
       name,
       description,
       startDate,
@@ -36,9 +37,10 @@ export async function createProjectAction(
       members,
       createdBy: session.userId,
     })
-    redirect(`/projects/${projectId}`)
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e)
     return { error: `Lỗi tạo project: ${msg}` }
   }
+
+  redirect(`/projects/${projectId}`)
 }
