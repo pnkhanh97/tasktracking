@@ -1,6 +1,6 @@
 import { getSheetData, appendRow } from './sheets'
 
-const SHEET = 'Projects'
+const SHEET = 'Project'
 
 export type Project = {
   rowNumber: number
