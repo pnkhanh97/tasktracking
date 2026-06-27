@@ -19,6 +19,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center h-14 gap-6">
               <a href="/" className="text-white font-bold text-lg tracking-tight">Task Tracking</a>
               <a href="/" className="text-white/80 hover:text-white text-sm transition-colors">Dashboard</a>
+              <a href="/projects" className="text-white/80 hover:text-white text-sm transition-colors">Projects</a>
               <div className="ml-auto flex items-center gap-4">
                 <span className="text-white/80 text-sm">
                   {session.name}
