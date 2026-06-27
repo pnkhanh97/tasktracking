@@ -22,7 +22,7 @@ export async function findUserByEmail(email: string): Promise<User | null> {
   const sheets = google.sheets({ version: 'v4', auth: getAuth() })
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId: process.env.TASK_SPREADSHEET_ID!,
-    range: 'Users',
+    range: 'user',
   })
 
   const rows = res.data.values as string[][]
