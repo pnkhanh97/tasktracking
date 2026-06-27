@@ -3,7 +3,13 @@ import { getProjects } from '@/lib/projects'
 
 export default async function HomePage() {
   const session = await getSession()
-  const allProjects = await getProjects()
+  let allProjects: Awaited<ReturnType<typeof getProjects>> = []
+  let loadError = ''
+  try {
+    allProjects = await getProjects()
+  } catch (e) {
+    loadError = e instanceof Error ? e.message : String(e)
+  }
 
   const myProjects = session?.role === 'member'
     ? allProjects.filter(p =>
@@ -16,6 +22,11 @@ export default async function HomePage() {
 
   return (
     <div className="space-y-6">
+      {loadError && (
+        <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-700">
+          Lỗi tải dữ liệu: {loadError}
+        </div>
+      )}
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Xin chào, {session?.name}</h1>
         <p className="text-gray-500 text-sm mt-1">Tổng quan công việc của bạn hôm nay.</p>

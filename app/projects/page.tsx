@@ -18,10 +18,14 @@ const STATUS_COLOR: Record<string, string> = {
 
 export default async function ProjectsPage() {
   const session = await getSession()
-  const [projects, staffData] = await Promise.all([
-    getProjects(),
-    getSheetData('user'),
-  ])
+  let projects: Awaited<ReturnType<typeof getProjects>> = []
+  let staffData: string[][] = []
+  let loadError = ''
+  try {
+    ;[projects, staffData] = await Promise.all([getProjects(), getSheetData('user')])
+  } catch (e) {
+    loadError = e instanceof Error ? e.message : String(e)
+  }
 
   // Build staffId -> name map
   const h = staffData[0] ?? []
@@ -41,6 +45,11 @@ export default async function ProjectsPage() {
 
   return (
     <div className="space-y-6">
+      {loadError && (
+        <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-700">
+          Lỗi: {loadError}
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Projects</h1>
