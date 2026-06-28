@@ -24,12 +24,20 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ ta
     return NextResponse.json({ ok: true })
   }
 
-  // Admin/Manager đổi trạng thái / duyệt
+  // Đổi trạng thái task
   if (body.action === 'status') {
     const project = await getProjectById(task.projectId)
     const isManager = project?.manager === session.userId
-    if (session.role === 'member' && !isManager)
+    const isAssignee = task.assignees.includes(session.userId)
+    const isAdminOrManager = session.role === 'admin' || session.role === 'manager' || isManager
+
+    // Assignee chỉ được "Nhận task" (→ Đang thực hiện)
+    if (!isAdminOrManager && isAssignee && body.status !== 'Đang thực hiện')
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    // Member không phải assignee và không phải manager thì bị chặn
+    if (!isAdminOrManager && !isAssignee)
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+
     await updateTaskStatus(task, body.status)
     return NextResponse.json({ ok: true })
   }
