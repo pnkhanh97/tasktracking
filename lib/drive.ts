@@ -17,10 +17,11 @@ function driveClient() {
 
 const ROOT_FOLDER = process.env.TASK_DRIVE_FOLDER_ID!
 
-// Tìm hoặc tạo folder con tên = taskId trong folder gốc TaskTracking
-export async function getOrCreateTaskFolder(taskId: string): Promise<{ id: string; url: string }> {
-  const drive = driveClient()
-  const q = `name='${taskId}' and '${ROOT_FOLDER}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`
+type Drive = ReturnType<typeof driveClient>
+
+// Tìm hoặc tạo 1 folder tên `name` bên trong `parentId`
+async function getOrCreateFolder(drive: Drive, name: string, parentId: string): Promise<{ id: string; url: string }> {
+  const q = `name='${name}' and '${parentId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`
   const res = await drive.files.list({
     q,
     fields: 'files(id, webViewLink)',
@@ -34,11 +35,7 @@ export async function getOrCreateTaskFolder(taskId: string): Promise<{ id: strin
   }
 
   const folder = await drive.files.create({
-    requestBody: {
-      name: taskId,
-      mimeType: 'application/vnd.google-apps.folder',
-      parents: [ROOT_FOLDER],
-    },
+    requestBody: { name, mimeType: 'application/vnd.google-apps.folder', parents: [parentId] },
     fields: 'id, webViewLink',
     supportsAllDrives: true,
   })
@@ -48,15 +45,23 @@ export async function getOrCreateTaskFolder(taskId: string): Promise<{ id: strin
   }
 }
 
-// Upload 1 file vào folder của task, trả về { name, url }
+// Cấu trúc: TaskTracking / <projectId> / <taskId>
+export async function getOrCreateTaskFolder(projectId: string, taskId: string): Promise<{ id: string; url: string }> {
+  const drive = driveClient()
+  const projectFolder = await getOrCreateFolder(drive, projectId, ROOT_FOLDER)
+  return getOrCreateFolder(drive, taskId, projectFolder.id)
+}
+
+// Upload 1 file vào folder của task
 export async function uploadFileToTask(
+  projectId: string,
   taskId: string,
   fileName: string,
   mimeType: string,
   buffer: Buffer
 ): Promise<{ name: string; url: string }> {
   const drive = driveClient()
-  const folder = await getOrCreateTaskFolder(taskId)
+  const folder = await getOrCreateTaskFolder(projectId, taskId)
 
   const res = await drive.files.create({
     requestBody: { name: fileName, parents: [folder.id] },
@@ -65,7 +70,6 @@ export async function uploadFileToTask(
     supportsAllDrives: true,
   })
 
-  // Cho phép bất kỳ ai có link đều xem được
   try {
     await drive.permissions.create({
       fileId: res.data.id!,

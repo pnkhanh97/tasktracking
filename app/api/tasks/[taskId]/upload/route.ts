@@ -26,7 +26,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tas
   const buffer = Buffer.from(await file.arrayBuffer())
 
   try {
-    const result = await uploadFileToTask(taskId, file.name, file.type || 'application/octet-stream', buffer)
+    const result = await uploadFileToTask(task.projectId, taskId, file.name, file.type || 'application/octet-stream', buffer)
     return NextResponse.json(result)
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e)

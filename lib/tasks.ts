@@ -108,7 +108,7 @@ export async function createTask(data: {
   // Tạo sẵn folder Drive cho task
   let folderUrl = ''
   try {
-    const folder = await getOrCreateTaskFolder(taskId)
+    const folder = await getOrCreateTaskFolder(data.projectId, taskId)
     folderUrl = folder.url
   } catch {
     folderUrl = ''
