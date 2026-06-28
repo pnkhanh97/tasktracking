@@ -3,7 +3,7 @@ import { getOrCreateTaskFolder } from './drive'
 
 const SHEET = 'Tasks'
 // Cột mới (DocLink, AttachmentFolder, ResultFiles) thêm vào CUỐI để tương thích dữ liệu cũ
-const HEADERS = ['TaskID','ProjectID','Title','Description','AssignedTo','Priority','Status','Deadline','Result','SubmittedAt','CreatedBy','CreatedAt','DocLink','AttachmentFolder','ResultFiles']
+const HEADERS = ['TaskID','ProjectID','Title','Description','AssignedTo','Priority','Status','Deadline','Result','SubmittedAt','CreatedBy','CreatedAt','DocLink','AttachmentFolder','ResultFiles','StartedAt']
 
 export type Task = {
   rowNumber: number
@@ -17,6 +17,7 @@ export type Task = {
   deadline: string
   result: string
   submittedAt: string
+  startedAt: string
   createdBy: string
   createdAt: string
   docLink: string
@@ -57,6 +58,7 @@ function mapRow(h: string[], row: string[], rowNumber: number): Task {
     docLink:     row[idx(h,'DocLink')]     ?? '',
     attachmentFolder: row[idx(h,'AttachmentFolder')] ?? '',
     resultFiles: parseFiles(row[idx(h,'ResultFiles')] ?? ''),
+    startedAt:   row[idx(h,'StartedAt')]   ?? '',
   }
 }
 
@@ -153,9 +155,13 @@ export async function submitTaskResult(
 }
 
 export async function updateTaskStatus(task: Task, status: string): Promise<void> {
+  const now = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })
   const updates: Record<string, string> = { Status: status }
+  if (status === 'Đang thực hiện') {
+    updates.StartedAt = now
+  }
   if (status === 'Hoàn thành') {
-    updates.SubmittedAt = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })
+    updates.SubmittedAt = now
   }
   await writeBack(task, updates)
 }

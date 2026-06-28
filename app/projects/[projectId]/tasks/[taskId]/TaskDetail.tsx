@@ -13,6 +13,7 @@ type Task = {
   deadline: string
   result: string
   submittedAt: string
+  startedAt: string
   createdAt: string
   docLink: string
   attachmentFolder: string
@@ -48,6 +49,7 @@ export default function TaskDetail({
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
 
+  const canAccept = isAssignee && task.status === 'Chờ thực hiện'
   const canSubmit = isAssignee && (task.status === 'Đang thực hiện' || task.status === 'Chờ duyệt')
 
   async function handleSubmit() {
@@ -115,6 +117,12 @@ export default function TaskDetail({
           <div className="flex justify-between"><span className="text-gray-500">Deadline</span><span className="font-medium">{task.deadline || '—'}</span></div>
           <div className="flex justify-between"><span className="text-gray-500">Tạo bởi</span><span>{createdByName}</span></div>
           <div className="flex justify-between"><span className="text-gray-500">Ngày tạo</span><span>{task.createdAt}</span></div>
+          {task.startedAt && (
+            <div className="flex justify-between"><span className="text-gray-500">Bắt đầu lúc</span><span>{task.startedAt}</span></div>
+          )}
+          {task.submittedAt && task.status === 'Hoàn thành' && (
+            <div className="flex justify-between"><span className="text-gray-500">Hoàn thành lúc</span><span>{task.submittedAt}</span></div>
+          )}
         </div>
 
         {task.description && (
@@ -140,21 +148,32 @@ export default function TaskDetail({
         </div>
       </div>
 
+      {/* Assignee: Nhận task */}
+      {canAccept && (
+        <div className="bg-blue-50 rounded-xl border border-blue-200 p-4 flex items-center gap-3">
+          <span className="text-sm text-blue-700">Task này đang chờ bạn nhận.</span>
+          <button onClick={() => handleStatus('Đang thực hiện')}
+            className="text-sm bg-blue-600 text-white px-4 py-1.5 rounded-lg hover:bg-blue-700">
+            Nhận task
+          </button>
+        </div>
+      )}
+
       {/* Manager actions */}
       {canManage && (
         <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-2 flex-wrap">
           <span className="text-sm text-gray-500 mr-2">Quản lý:</span>
-          {task.status === 'Chờ thực hiện' && (
-            <button onClick={() => handleStatus('Đang thực hiện')}
-              className="text-sm bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-100">Bắt đầu</button>
-          )}
           {task.status === 'Chờ duyệt' && (
             <button onClick={() => handleStatus('Hoàn thành')}
-              className="text-sm bg-green-50 text-green-700 px-3 py-1.5 rounded-lg hover:bg-green-100">Duyệt hoàn thành</button>
+              className="text-sm bg-green-50 text-green-700 px-3 py-1.5 rounded-lg hover:bg-green-100">Kết thúc</button>
           )}
-          {task.status !== 'Hoàn thành' && (
+          {(task.status === 'Đang thực hiện' || task.status === 'Chờ duyệt') && (
             <button onClick={() => handleStatus('Tạm dừng')}
               className="text-sm bg-gray-50 text-gray-600 px-3 py-1.5 rounded-lg hover:bg-gray-100">Tạm dừng</button>
+          )}
+          {task.status === 'Tạm dừng' && (
+            <button onClick={() => handleStatus('Đang thực hiện')}
+              className="text-sm bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-100">Tiếp tục</button>
           )}
         </div>
       )}

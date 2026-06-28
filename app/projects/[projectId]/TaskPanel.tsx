@@ -179,23 +179,25 @@ export default function TaskPanel({
                 </div>
 
                 <div className="flex flex-col gap-1 shrink-0">
-                  {canManage && task.status === 'Chờ thực hiện' && (
+                  {/* Assignee actions */}
+                  {task.assignees.includes(currentUserId) && task.status === 'Chờ thực hiện' && (
                     <button onClick={() => handleStatusChange(task, 'Đang thực hiện')}
-                      className="text-xs bg-gray-50 text-gray-600 hover:bg-gray-100 px-2 py-1 rounded transition-colors">
-                      Bắt đầu
+                      className="text-xs bg-blue-50 text-blue-700 hover:bg-blue-100 px-2 py-1 rounded transition-colors">
+                      Nhận task
                     </button>
                   )}
+                  {task.assignees.includes(currentUserId) && task.status === 'Đang thực hiện' && (
+                    <a href={`/projects/${projectId}/tasks/${task.taskId}`}
+                      className="text-xs bg-[#03A680]/10 text-[#03A680] hover:bg-[#03A680]/20 px-2 py-1 rounded transition-colors text-center">
+                      Đã xong
+                    </a>
+                  )}
+                  {/* PM action */}
                   {canManage && task.status === 'Chờ duyệt' && (
                     <button onClick={() => handleStatusChange(task, 'Hoàn thành')}
                       className="text-xs bg-green-50 text-green-700 hover:bg-green-100 px-2 py-1 rounded transition-colors">
-                      Duyệt
+                      Kết thúc
                     </button>
-                  )}
-                  {task.assignees.includes(currentUserId) && (task.status === 'Đang thực hiện' || task.status === 'Chờ duyệt') && (
-                    <a href={`/projects/${projectId}/tasks/${task.taskId}`}
-                      className="text-xs bg-blue-50 text-blue-700 hover:bg-blue-100 px-2 py-1 rounded transition-colors text-center">
-                      Nộp kết quả
-                    </a>
                   )}
                 </div>
               </div>
