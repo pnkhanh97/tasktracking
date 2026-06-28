@@ -27,7 +27,7 @@ const STATUS_COLOR: Record<string, string> = {
 const PRIORITIES = ['Thấp', 'Trung bình', 'Cao', 'Khẩn cấp']
 
 export default function TaskPanel({
-  projectId, initialTasks, staffMap, members, canManage
+  projectId, initialTasks, staffMap, members, canManage, currentUserId
 }: {
   projectId: string
   initialTasks: Task[]
@@ -190,6 +190,12 @@ export default function TaskPanel({
                       className="text-xs bg-green-50 text-green-700 hover:bg-green-100 px-2 py-1 rounded transition-colors">
                       Duyệt
                     </button>
+                  )}
+                  {task.assignees.includes(currentUserId) && (task.status === 'Đang thực hiện' || task.status === 'Chờ duyệt') && (
+                    <a href={`/projects/${projectId}/tasks/${task.taskId}`}
+                      className="text-xs bg-blue-50 text-blue-700 hover:bg-blue-100 px-2 py-1 rounded transition-colors text-center">
+                      Nộp kết quả
+                    </a>
                   )}
                 </div>
               </div>
