@@ -20,6 +20,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <a href="/" className="text-white font-bold text-lg tracking-tight">Task Tracking</a>
               <a href="/" className="text-white/80 hover:text-white text-sm transition-colors">Dashboard</a>
               <a href="/projects" className="text-white/80 hover:text-white text-sm transition-colors">Projects</a>
+              {session.role !== 'member' && (
+                <a href="/projects/new" className="text-white/80 hover:text-white text-sm transition-colors">+ Tạo project</a>
+              )}
               <div className="ml-auto flex items-center gap-4">
                 <span className="text-white/80 text-sm">
                   {session.name}

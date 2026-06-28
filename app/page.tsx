@@ -27,9 +27,17 @@ export default async function HomePage() {
           Lỗi tải dữ liệu: {loadError}
         </div>
       )}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Xin chào, {session?.name}</h1>
-        <p className="text-gray-500 text-sm mt-1">Tổng quan công việc của bạn hôm nay.</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Xin chào, {session?.name}</h1>
+          <p className="text-gray-500 text-sm mt-1">Tổng quan công việc của bạn hôm nay.</p>
+        </div>
+        {session?.role !== 'member' && (
+          <a href="/projects/new"
+            className="bg-[#03A680] hover:bg-[#028a6a] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+            + Tạo project
+          </a>
+        )}
       </div>
 
       <div className="grid grid-cols-3 gap-4">
