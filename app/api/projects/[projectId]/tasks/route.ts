@@ -21,9 +21,15 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pro
   if (!project) return NextResponse.json({ error: 'Project not found' }, { status: 404 })
 
   const body = await req.json()
-  const { title, description, assignedTo, priority, deadline } = body
-  if (!title || !assignedTo) return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
+  const { title, description, assignees, priority, deadline, docLink } = body
+  if (!title || !assignees || assignees.length === 0)
+    return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
 
-  const taskId = await createTask({ projectId, title, description, assignedTo, priority, deadline, createdBy: session.userId })
+  const taskId = await createTask({
+    projectId, title, description,
+    assignees, priority, deadline,
+    docLink: docLink ?? '',
+    createdBy: session.userId,
+  })
   return NextResponse.json({ taskId })
 }
