@@ -21,7 +21,12 @@ const ROOT_FOLDER = process.env.TASK_DRIVE_FOLDER_ID!
 export async function getOrCreateTaskFolder(taskId: string): Promise<{ id: string; url: string }> {
   const drive = driveClient()
   const q = `name='${taskId}' and '${ROOT_FOLDER}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`
-  const res = await drive.files.list({ q, fields: 'files(id, webViewLink)' })
+  const res = await drive.files.list({
+    q,
+    fields: 'files(id, webViewLink)',
+    supportsAllDrives: true,
+    includeItemsFromAllDrives: true,
+  })
 
   if (res.data.files && res.data.files.length > 0) {
     const f = res.data.files[0]
@@ -35,6 +40,7 @@ export async function getOrCreateTaskFolder(taskId: string): Promise<{ id: strin
       parents: [ROOT_FOLDER],
     },
     fields: 'id, webViewLink',
+    supportsAllDrives: true,
   })
   return {
     id: folder.data.id!,
@@ -56,6 +62,7 @@ export async function uploadFileToTask(
     requestBody: { name: fileName, parents: [folder.id] },
     media: { mimeType, body: Readable.from(buffer) },
     fields: 'id, webViewLink',
+    supportsAllDrives: true,
   })
 
   // Cho phép bất kỳ ai có link đều xem được
@@ -63,6 +70,7 @@ export async function uploadFileToTask(
     await drive.permissions.create({
       fileId: res.data.id!,
       requestBody: { role: 'reader', type: 'anyone' },
+      supportsAllDrives: true,
     })
   } catch {
     // ignore nếu không set được quyền
