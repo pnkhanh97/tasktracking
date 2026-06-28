@@ -82,18 +82,42 @@ export default async function ProjectDetailPage({
           </div>
 
           {/* Members */}
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
-            <h2 className="text-sm font-semibold text-gray-700 mb-3">Thành viên ({members.length})</h2>
-            <div className="flex flex-wrap gap-2">
-              {members.map(m => (
-                <div key={m.staffId} className="flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-full px-3 py-1">
-                  <div className="w-5 h-5 rounded-full bg-[#03A680] text-white flex items-center justify-center text-xs font-bold">
-                    {m.name[0]}
+          <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-4">
+            {/* PM */}
+            <div>
+              <p className="text-xs font-medium text-gray-500 mb-2">Quản lý dự án:</p>
+              <div className="flex flex-wrap gap-2">
+                {members.filter(m => m.staffId === project.manager).map(m => (
+                  <div key={m.staffId} className="flex items-center gap-1.5 bg-[#03A680]/5 border border-[#03A680]/20 rounded-full px-3 py-1">
+                    <div className="w-5 h-5 rounded-full bg-[#03A680] text-white flex items-center justify-center text-xs font-bold">
+                      {m.name[0]}
+                    </div>
+                    <span className="text-xs text-gray-700">{m.name}</span>
+                    <span className="text-xs text-[#03A680] font-medium">PM</span>
                   </div>
-                  <span className="text-xs text-gray-700">{m.name}</span>
-                  {m.staffId === project.manager && <span className="text-xs text-[#03A680]">PM</span>}
-                </div>
-              ))}
+                ))}
+              </div>
+            </div>
+
+            {/* Members */}
+            <div>
+              <p className="text-xs font-medium text-gray-500 mb-2">
+                Thành viên dự án: <span className="text-gray-400">({members.filter(m => m.staffId !== project.manager).length})</span>
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {members.filter(m => m.staffId !== project.manager).length === 0 ? (
+                  <span className="text-xs text-gray-400 italic">Chưa có thành viên.</span>
+                ) : (
+                  members.filter(m => m.staffId !== project.manager).map(m => (
+                    <div key={m.staffId} className="flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-full px-3 py-1">
+                      <div className="w-5 h-5 rounded-full bg-gray-400 text-white flex items-center justify-center text-xs font-bold">
+                        {m.name[0]}
+                      </div>
+                      <span className="text-xs text-gray-700">{m.name}</span>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           </div>
 
