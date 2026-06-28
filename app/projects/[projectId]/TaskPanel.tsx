@@ -189,7 +189,7 @@ export default function TaskPanel({
                   {task.assignees.includes(currentUserId) && task.status === 'Đang thực hiện' && (
                     <a href={`/projects/${projectId}/tasks/${task.taskId}`}
                       className="text-xs bg-[#03A680]/10 text-[#03A680] hover:bg-[#03A680]/20 px-2 py-1 rounded transition-colors text-center">
-                      Đã xong
+                      Nộp kết quả
                     </a>
                   )}
                   {/* PM action */}
