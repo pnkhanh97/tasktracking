@@ -25,7 +25,7 @@ export async function uploadFileToCloudinary(
         unique_filename: true,
       },
       (error, result) => {
-        if (error) reject(error)
+        if (error) reject(new Error(error.message ?? JSON.stringify(error)))
         else resolve(result as { secure_url: string })
       }
     )
