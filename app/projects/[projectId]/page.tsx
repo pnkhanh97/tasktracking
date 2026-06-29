@@ -122,8 +122,8 @@ export default async function ProjectDetailPage({
             </div>
           </div>
 
-          {/* Project status actions */}
-          {canManage && (
+          {/* Project status actions — visible to admin/manager/PM */}
+          {(session?.role === 'admin' || session?.role === 'manager' || project.manager === session?.userId) && (
             <ProjectStatusBar projectId={projectId} currentStatus={project.status} />
           )}
 
