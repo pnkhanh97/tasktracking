@@ -28,6 +28,7 @@ async function getOrCreateFolder(drive: Drive, name: string, parentId: string): 
     fields: 'files(id, webViewLink)',
     supportsAllDrives: true,
     includeItemsFromAllDrives: true,
+    corpora: 'allDrives',
   })
 
   if (res.data.files && res.data.files.length > 0) {
@@ -36,7 +37,11 @@ async function getOrCreateFolder(drive: Drive, name: string, parentId: string): 
   }
 
   const folder = await drive.files.create({
-    requestBody: { name, mimeType: 'application/vnd.google-apps.folder', parents: [parentId] },
+    requestBody: {
+      name,
+      mimeType: 'application/vnd.google-apps.folder',
+      parents: [parentId],
+    },
     fields: 'id, webViewLink',
     supportsAllDrives: true,
   })
