@@ -3,7 +3,7 @@ import { getOrCreateTaskFolder } from './drive'
 
 const SHEET = 'Tasks'
 // Cột mới (DocLink, AttachmentFolder, ResultFiles) thêm vào CUỐI để tương thích dữ liệu cũ
-const HEADERS = ['TaskID','ProjectID','Title','Description','AssignedTo','Priority','Status','Deadline','Result','SubmittedAt','CreatedBy','CreatedAt','DocLink','AttachmentFolder','ResultFiles','StartedAt']
+const HEADERS = ['TaskID','ProjectID','Title','Description','AssignedTo','Priority','Status','Deadline','Result','SubmittedAt','CreatedBy','CreatedAt','DocLink','AttachmentFolder','ResultFiles','StartedAt','SubmittedBy']
 
 export type Task = {
   rowNumber: number
@@ -17,6 +17,7 @@ export type Task = {
   deadline: string
   result: string
   submittedAt: string
+  submittedBy: string
   startedAt: string
   createdBy: string
   createdAt: string
@@ -59,6 +60,7 @@ function mapRow(h: string[], row: string[], rowNumber: number): Task {
     attachmentFolder: row[idx(h,'AttachmentFolder')] ?? '',
     resultFiles: parseFiles(row[idx(h,'ResultFiles')] ?? ''),
     startedAt:   row[idx(h,'StartedAt')]   ?? '',
+    submittedBy: row[idx(h,'SubmittedBy')] ?? '',
   }
 }
 
@@ -160,7 +162,8 @@ async function writeBack(task: Task, updates: Partial<Record<string, string>>) {
 export async function submitTaskResult(
   task: Task,
   result: string,
-  newFiles: { name: string; url: string }[]
+  newFiles: { name: string; url: string }[],
+  submittedBy?: string,
 ): Promise<void> {
   const now = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })
   const merged = [...task.resultFiles, ...newFiles]
@@ -169,6 +172,7 @@ export async function submitTaskResult(
     ResultFiles: stringifyFiles(merged),
     SubmittedAt: now,
     Status: 'Chờ duyệt',
+    ...(submittedBy ? { SubmittedBy: submittedBy } : {}),
   })
 }
 

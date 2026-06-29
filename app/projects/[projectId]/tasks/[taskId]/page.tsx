@@ -39,6 +39,7 @@ export default async function TaskDetailPage({
       createdByName={staffMap[task.createdBy] ?? task.createdBy}
       isAssignee={isAssignee}
       canManage={canManage ?? false}
+      currentUser={{ id: session?.userId ?? '', name: session?.name ?? '' }}
     />
   )
 }

@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import TaskCommentThread from './TaskCommentThread'
 
 type FileRef = { name: string; url: string }
 type Task = {
@@ -13,6 +14,7 @@ type Task = {
   deadline: string
   result: string
   submittedAt: string
+  submittedBy: string
   startedAt: string
   createdAt: string
   docLink: string
@@ -34,7 +36,7 @@ const PRIORITY_COLOR: Record<string, string> = {
 }
 
 export default function TaskDetail({
-  projectId, task, assigneeNames, createdByName, isAssignee, canManage,
+  projectId, task, assigneeNames, createdByName, isAssignee, canManage, currentUser,
 }: {
   projectId: string
   task: Task
@@ -42,6 +44,7 @@ export default function TaskDetail({
   createdByName: string
   isAssignee: boolean
   canManage: boolean
+  currentUser: { id: string; name: string }
 }) {
   const router = useRouter()
   const [result, setResult] = useState(task.result)
@@ -182,7 +185,12 @@ export default function TaskDetail({
       {(task.result || task.resultFiles.length > 0) && (
         <div className="bg-white rounded-xl border border-gray-200 p-5">
           <div className="flex items-center justify-between mb-2">
-            <h2 className="text-sm font-semibold text-gray-700">Kết quả đã nộp</h2>
+            <div>
+              <h2 className="text-sm font-semibold text-gray-700">Kết quả đã nộp</h2>
+              {task.submittedBy && (
+                <p className="text-xs text-gray-400 mt-0.5">Nộp bởi: <span className="text-gray-600 font-medium">{task.submittedBy}</span></p>
+              )}
+            </div>
             {task.submittedAt && <span className="text-xs text-gray-400">{task.submittedAt}</span>}
           </div>
           {task.result && <p className="text-sm text-gray-700 whitespace-pre-wrap">{task.result}</p>}
@@ -198,6 +206,9 @@ export default function TaskDetail({
           )}
         </div>
       )}
+
+      {/* Comment thread */}
+      <TaskCommentThread taskId={task.taskId} currentUser={currentUser} />
 
       {/* Submit form for assignees */}
       {canSubmit && (

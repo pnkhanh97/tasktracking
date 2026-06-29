@@ -20,7 +20,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ ta
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     if (!body.result?.trim() && (!body.files || body.files.length === 0))
       return NextResponse.json({ error: 'Result required' }, { status: 400 })
-    await submitTaskResult(task, body.result?.trim() ?? '', body.files ?? [])
+    await submitTaskResult(task, body.result?.trim() ?? '', body.files ?? [], session.name)
     return NextResponse.json({ ok: true })
   }
 
