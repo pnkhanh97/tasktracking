@@ -30,7 +30,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tas
     )
     return NextResponse.json(result)
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e)
+    const msg = e instanceof Error ? e.message : (typeof e === 'object' ? JSON.stringify(e) : String(e))
+    console.error('[upload] error:', e)
     return NextResponse.json({ error: `Upload lỗi: ${msg}` }, { status: 500 })
   }
 }
