@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getTaskById } from '@/lib/tasks'
 import { getProjectById } from '@/lib/projects'
 import { getSession } from '@/lib/session'
-import { uploadFileToTask } from '@/lib/drive'
+import { uploadFileToCloudinary } from '@/lib/cloudinary'
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ taskId: string }> }) {
   const { taskId } = await params
@@ -12,7 +12,6 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tas
   const task = await getTaskById(taskId)
   if (!task) return NextResponse.json({ error: 'Task not found' }, { status: 404 })
 
-  // Assignee, manager hoặc admin được upload
   const project = await getProjectById(task.projectId)
   const isAssignee = task.assignees.includes(session.userId)
   const isManager = project?.manager === session.userId
@@ -26,7 +25,9 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tas
   const buffer = Buffer.from(await file.arrayBuffer())
 
   try {
-    const result = await uploadFileToTask(task.projectId, taskId, file.name, file.type || 'application/octet-stream', buffer)
+    const result = await uploadFileToCloudinary(
+      task.projectId, taskId, file.name, buffer, file.type || 'application/octet-stream'
+    )
     return NextResponse.json(result)
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e)
