@@ -15,7 +15,8 @@ function driveClient() {
   return google.drive({ version: 'v3', auth: getAuth() })
 }
 
-const ROOT_FOLDER = process.env.TASK_DRIVE_FOLDER_ID!
+const ROOT_FOLDER = process.env.TASK_DRIVE_FOLDER_ID ?? ''
+if (!ROOT_FOLDER) console.error('[drive] TASK_DRIVE_FOLDER_ID is not set!')
 
 type Drive = ReturnType<typeof driveClient>
 
@@ -47,6 +48,7 @@ async function getOrCreateFolder(drive: Drive, name: string, parentId: string): 
 
 // Cấu trúc: TaskTracking / <projectId> / <taskId>
 export async function getOrCreateTaskFolder(projectId: string, taskId: string): Promise<{ id: string; url: string }> {
+  if (!ROOT_FOLDER) throw new Error('TASK_DRIVE_FOLDER_ID chưa được cấu hình trong môi trường')
   const drive = driveClient()
   const projectFolder = await getOrCreateFolder(drive, projectId, ROOT_FOLDER)
   return getOrCreateFolder(drive, taskId, projectFolder.id)
