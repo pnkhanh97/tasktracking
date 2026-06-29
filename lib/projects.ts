@@ -1,4 +1,4 @@
-import { getSheetData, appendRow } from './sheets'
+import { getSheetData, appendRow, updateRow } from './sheets'
 
 const SHEET = 'Project'
 const HEADERS = ['ProjectID','Name','Description','StartDate','Deadline','Priority','Status','Manager','Members','CreatedBy','CreatedAt']
@@ -87,4 +87,13 @@ export async function createProject(data: {
 export async function getProjectById(projectId: string): Promise<Project | null> {
   const projects = await getProjects()
   return projects.find(p => p.projectId === projectId) ?? null
+}
+
+export async function updateProjectStatus(project: Project, status: string): Promise<void> {
+  const data = await getSheetData(SHEET)
+  const h = data[0]
+  const row = data[project.rowNumber - 1] ?? []
+  while (row.length < h.length) row.push('')
+  row[h.indexOf('Status')] = status
+  await updateRow(SHEET, project.rowNumber, row)
 }

@@ -5,6 +5,7 @@ import { getSession } from '@/lib/session'
 import { notFound } from 'next/navigation'
 import ChatPanel from './ChatPanel'
 import TaskPanel from './TaskPanel'
+import ProjectStatusBar from './ProjectStatusBar'
 
 const STATUS_COLOR: Record<string, string> = {
   'Chờ khởi động': 'bg-gray-100 text-gray-600',
@@ -120,6 +121,11 @@ export default async function ProjectDetailPage({
               </div>
             </div>
           </div>
+
+          {/* Project status actions */}
+          {canManage && (
+            <ProjectStatusBar projectId={projectId} currentStatus={project.status} />
+          )}
 
           {/* Tasks */}
           <TaskPanel
