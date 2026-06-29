@@ -62,6 +62,24 @@ function mapRow(h: string[], row: string[], rowNumber: number): Task {
   }
 }
 
+export async function getTaskSummaryByProject(): Promise<Record<string, { total: number; done: number; inProgress: number }>> {
+  const data = await getSheetData(SHEET)
+  if (data.length < 2) return {}
+  const h = data[0]
+  if (!h.includes('TaskID')) return {}
+  const result: Record<string, { total: number; done: number; inProgress: number }> = {}
+  data.slice(1).forEach(row => {
+    const pid = row[idx(h, 'ProjectID')]
+    if (!pid) return
+    if (!result[pid]) result[pid] = { total: 0, done: 0, inProgress: 0 }
+    result[pid].total++
+    const status = row[idx(h, 'Status')] ?? ''
+    if (status === 'Hoàn thành') result[pid].done++
+    else if (status === 'Đang thực hiện') result[pid].inProgress++
+  })
+  return result
+}
+
 export async function getTasksByProject(projectId: string): Promise<Task[]> {
   const data = await getSheetData(SHEET)
   if (data.length < 2) return []

@@ -4,7 +4,7 @@ import { getTasksByProject } from '@/lib/tasks'
 import { getSession } from '@/lib/session'
 import { notFound } from 'next/navigation'
 import ChatPanel from './ChatPanel'
-import TaskPanel from './TaskPanel'
+import KanbanBoard from './KanbanBoard'
 import ProjectStatusBar from './ProjectStatusBar'
 
 const STATUS_COLOR: Record<string, string> = {
@@ -127,8 +127,8 @@ export default async function ProjectDetailPage({
             <ProjectStatusBar projectId={projectId} currentStatus={project.status} />
           )}
 
-          {/* Tasks */}
-          <TaskPanel
+          {/* Kanban board */}
+          <KanbanBoard
             projectId={projectId}
             initialTasks={tasks}
             staffMap={staffMap}
