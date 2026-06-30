@@ -23,7 +23,7 @@ export async function uploadFileToCloudinary(
   const signature = crypto.createHash('sha1').update(toSign).digest('hex')
 
   const form = new FormData()
-  form.append('file', new Blob([buffer], { type: mimeType }), fileName)
+  form.append('file', new Blob([new Uint8Array(buffer)], { type: mimeType }), fileName)
   form.append('folder',    folder)
   form.append('timestamp', timestamp)
   form.append('api_key',   API_KEY)
